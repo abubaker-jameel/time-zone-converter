@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import moment from "moment-timezone";
+import { Button } from "./button";
 
 type Props = {
   timezone: {
@@ -21,14 +22,12 @@ const TimezoneCard: React.FC<Props> = ({
 }) => {
   const localMoment = referenceTime.clone().tz(timezone.value);
 
-  // 🕒 Convert current referenceTime to local hours/minutes value
-  const [localValue, setLocalValue] = useState<number>(() =>
-    timeUnit === "hour"
-      ? localMoment.hours()
-      : localMoment.hours() * 60 + localMoment.minutes()
-  );
+  const [localValue, setLocalValue] = useState<number>(() => {
+    return timeUnit === "hour"
+      ? localMoment.hour()
+      : localMoment.hours() * 60 + localMoment.minutes();
+  });
 
-  // 🔁 Update slider when referenceTime or timeUnit changes
   useEffect(() => {
     const local = referenceTime.clone().tz(timezone.value);
     setLocalValue(
@@ -38,39 +37,45 @@ const TimezoneCard: React.FC<Props> = ({
     );
   }, [referenceTime, timezone.value, timeUnit]);
 
-  // 🔧 Handle slider movement
   const handleSliderChange = (value: number) => {
     setLocalValue(value);
 
     const local = referenceTime.clone().tz(timezone.value);
-
     const newLocalTime =
       timeUnit === "hour"
-        ? local.clone().set({ hour: value, minute: 0, second: 0, millisecond: 0 })
+        ? local.clone().set({
+            hour: value,
+            minute: 0,
+            second: 0,
+            millisecond: 0,
+          })
         : local.clone().startOf("day").add(value, "minutes");
 
     const newUtcTime = newLocalTime.clone().utc();
     onUpdateReferenceTime(moment.utc(newUtcTime));
   };
 
-  const formattedTime = localMoment.format("hh:mm A"); // 🕒 e.g., 03:42 PM
-  const zoneAbbr = localMoment.format("z");            // e.g., PKT
-  const formattedDate = localMoment.format("dddd, MMM D"); // Tue, Jul 9
+  const formattedTime = localMoment.format("hh:mm A"); // e.g. 03:45 PM
+  const zoneAbbr = localMoment.format("z"); // e.g. PKT
+  const formattedDate = localMoment.format("dddd, MMMM D"); // e.g. Tuesday, July 8
 
-  // Show currently selected slider value
   const formattedSelectedValue =
     timeUnit === "hour"
       ? `${localValue.toString().padStart(2, "0")}:00`
-      : moment().startOf("day").add(localValue, "minutes").format("hh:mm A");
+      : moment()
+          .startOf("day")
+          .add(localValue, "minutes")
+          .format("hh:mm A");
 
   return (
     <div className="border rounded p-4 shadow-md relative bg-white">
-      <button
+      <Button
         className="absolute top-2 right-2 text-red-500"
         onClick={onRemove}
+        variant="ghost"
       >
         ✕
-      </button>
+      </Button>
 
       <h2 className="text-lg font-bold mb-2">{timezone.label}</h2>
 

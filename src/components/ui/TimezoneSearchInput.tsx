@@ -11,16 +11,18 @@ type Timezone = {
 const PAGE_SIZE = 10;
 
 type Props = {
-    onSelect: (tz: Timezone) => void;
+  onSelect: (tz: Timezone) => void;
 };
 
-const TimezoneSearchInput: FC<Props> = ({onSelect}) => {
+const TimezoneSearchInput: FC<Props> = ({ onSelect }) => {
   const [timezones, setTimezones] = useState<Timezone[]>([]);
   const [query, setQuery] = useState<string>("");
   const [filtered, setFiltered] = useState<Timezone[]>([]);
   const [visibleResults, setVisibleResults] = useState<Timezone[]>([]);
   const [page, setPage] = useState<number>(1);
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
   const dropdownRef = useRef<HTMLUListElement | null>(null);
 
   useEffect(() => {
@@ -66,8 +68,25 @@ const TimezoneSearchInput: FC<Props> = ({onSelect}) => {
     setIsDropdownOpen(false);
   };
 
+  // ✅ Close on outside click
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
-    <div className="relative">
+    <div className="relative" ref={wrapperRef}>
       <Input
         type="text"
         className="w-full border px-3 py-2 rounded"
@@ -80,7 +99,6 @@ const TimezoneSearchInput: FC<Props> = ({onSelect}) => {
         onFocus={() => {
           setIsDropdownOpen(true);
           if (query.trim() === "") {
-            // Show first 10 on focus
             setFiltered(timezones);
             setVisibleResults(timezones.slice(0, PAGE_SIZE));
             setPage(1);
