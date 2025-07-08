@@ -1,9 +1,10 @@
 import type { FC } from "react";
+import Header from "./components/ui/header";
 
 const App : FC = () => {
     return (
         <div>
-            <h1>Hello World</h1>
+          <Header />
         </div>
     );
 }

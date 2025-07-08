@@ -1,0 +1,11 @@
+{
+    "manifest_version": 3,
+    "name": "Timezone Comparer",
+    "description": "Compare time zones with shift sliders",
+    "version": "1.0",
+    "action": {
+      "default_popup": "index.html"
+    },
+    "permissions": []
+  }
+  
