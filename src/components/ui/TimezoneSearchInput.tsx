@@ -67,7 +67,7 @@ const TimezoneSearchInput: FC<Props> = ({onSelect}) => {
   };
 
   return (
-    <div className="relative w-full max-w-md mx-auto">
+    <div className="relative">
       <Input
         type="text"
         className="w-full border px-3 py-2 rounded"

@@ -66,7 +66,7 @@ const TimezoneComparer: React.FC = () => {
   };
 
   return (
-    <div className="p-4 space-y-4 w-[400px] h-[600px] overflow-y-auto">
+    <div className="space-y-4 overflow-y-auto h-full">
       <div className="flex justify-between items-center">
         <TimezoneSearchInput onSelect={handleAddTimezone} />
         {selectedZones.length > 0 && (
